@@ -1,0 +1,86 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguridad Alimentaria PRP 2024</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- API --> 
+<div id="nameMenu" style="display: block;">
+  <div class="title">
+    <div class="overlay"></div>
+    <h1>Nombre y Apellido:</h1>
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+    <input type="text" id="userNameInput" placeholder="Ingresa tu nombre y apellido" style="padding: 10px; font-size: 16px; width: 60%; border: 2px solid #800020; border-radius: 8px;">
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+    <button onclick="submitName()" class="button">Continuar</button>
+  </div>
+</div>
+
+<!-- Menú Principal -->
+<div id="menu" style="display: none;">
+  <div class="title">
+    <div class="overlay"></div>
+    <h1>Seguridad Alimentaria PRP 2024</h1>
+  </div>
+  <div class="menu-grid">
+    <div onclick="openSection('Recibo de Cebada')" class="menu-item">Recibo de Cebada</div>
+    <div onclick="openSection('Area de Malteo')" class="menu-item">Área de Malteo</div>
+    <div onclick="openSection('Almacenamiento')" class="menu-item">Almacenamiento</div>
+    <div onclick="showPopup('Opción en desarrollo')" class="menu-item">Exterior de Planta</div>
+    <div onclick="showPopup('Opción en desarrollo')" class="menu-item">Logística</div>
+    <div onclick="showPopup('Opción en desarrollo')" class="menu-item">Áreas de servicios y mantenimiento de agua</div>
+    <div onclick="showPopup('Opción en desarrollo')" class="menu-item">Laboratorios</div>
+  </div>
+</div>
+
+<!-- Menú de Selección de Mes -->
+<div id="monthMenu" style="display:none;">
+  <div class="title">
+    <div class="overlay"></div>
+    <h1>Seleccione el Mes</h1>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-item" onclick="selectMonth('Enero')">Enero</div>
+    <div class="menu-item" onclick="selectMonth('Febrero')">Febrero</div>
+    <div class="menu-item" onclick="selectMonth('Marzo')">Marzo</div>
+    <div class="menu-item" onclick="selectMonth('Abril')">Abril</div>
+    <div class="menu-item" onclick="selectMonth('Mayo')">Mayo</div>
+    <div class="menu-item" onclick="selectMonth('Junio')">Junio</div>
+    <div class="menu-item" onclick="selectMonth('Julio')">Julio</div>
+    <div class="menu-item" onclick="selectMonth('Agosto')">Agosto</div>
+    <div class="menu-item" onclick="selectMonth('Septiembre')">Septiembre</div>
+    <div class="menu-item" onclick="selectMonth('Octubre')">Octubre</div>
+    <div class="menu-item" onclick="selectMonth('Noviembre')">Noviembre</div>
+    <div class="menu-item" onclick="selectMonth('Diciembre')">Diciembre</div>
+  </div>
+  <button class="button back-button" onclick="returnToMainMenu()">Regresar al Menú Principal</button>
+</div>
+
+<!-- Sección del Cuestionario -->
+<div id="questionnaire" style="display:none; position: relative;">
+  <div class="title">
+    <div class="overlay"></div>
+    <h1 id="sectionTitle"></h1>
+  </div>
+  <button class="button back-button" onclick="returnToMenu()">Regresar al Menú</button>
+  <div id="questionsContainer"></div>
+  <button class="button submit-button" onclick="submitAnswers()">Enviar</button>
+</div>
+<!-- Contenedor para mostrar resultados -->
+<div id="resultContainer" style="display:none; position: relative;"></div>
+
+<!-- Pop-up -->
+<div id="popup" style="display:none;">
+  <p id="popupMessage"></p>
+  <button class="button" onclick="closePopup()">Cerrar</button>
+</div>
+
+<!-- Incluye tu script -->
+<script src="script.js"></script>
+</body>
+</html>

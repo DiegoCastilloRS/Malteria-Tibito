@@ -1,0 +1,129 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+#menu {
+  padding: 0; /* Reset padding to avoid extra spacing around the title */
+  max-width: 100%; /* Ensures full width of the page */
+  margin: 0 auto;
+}
+
+.title {
+  position: relative;
+  color: white;
+  background-image: url('https://i.postimg.cc/QdD1QHgr/DALL-E-2024-11-04-18-23-35-A-wallpaper-featuring-a-close-up-view-of-golden-brown-malt-grains-sprea.webp');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.title .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay with 50% opacity */
+  z-index: 1;
+}
+
+.title h1 {
+  position: relative;
+  z-index: 2; /* Ensures the text is above the overlay */
+  margin: 0; /* Optional: Remove default margin */
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 10px;
+  max-width: 600px;
+  margin: 20px auto; /* Adds spacing to separate from the title */
+}
+
+.menu-item {
+  margin: 10px;
+  padding: 15px;
+  background-color: #800020; /* Burgundy color */
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid black; /* Black border */
+  text-align: center;
+  display: flex; /* To center content */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.menu-item:hover {
+  background-color: #660016;
+}
+
+#popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #000;
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.button {
+  background-color: #800020; /* Burgundy color */
+  color: white;
+  padding: 10px 20px;
+  border: 2px solid black; /* Black border */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button:hover {
+  background-color: #660016;
+}
+
+#questionnaire, #popup {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#questionsContainer p {
+  max-width: 600px;
+  margin: 0 auto 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+#menuHeader {
+  background-image: url('ruta/a/tu/imagen.jpg'); /* Ruta de la imagen */
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 20px; /* Adjust padding as necessary */
+}
+
+#menuButtons {
+  background-color: white; /* Fondo blanco para los botones */
+  padding: 20px; /* Adjust padding as necessary */
+}
+
+#questionnaire .button.back-button {
+  position: fixed; /* Change to 'fixed' so it stays outside document flow */
+  top: 10px;
+  left: 10px;
+  background-color: #800020; /* Burgundy color */
+  color: white;
+  padding: 10px 20px;
+  border: 2px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 1000; /* Ensures it is on top of other elements */
+}
