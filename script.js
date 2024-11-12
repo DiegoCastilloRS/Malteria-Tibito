@@ -476,7 +476,7 @@ function createDownloadAndResetButtons() {
   // Crear botón de descarga
   const downloadButton = document.createElement("button");
   downloadButton.id = "downloadButton";
-  downloadButton.innerText = ⬇️ Descargar Resultados";
+  downloadButton.innerText = "⬇️ Descargar Resultados";
   downloadButton.className = "button"; // Usar la clase existente para estilo
   downloadButton.onclick = downloadAccumulatedAnswers;
   menu.appendChild(downloadButton);
