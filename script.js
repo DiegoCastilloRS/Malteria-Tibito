@@ -184,8 +184,9 @@ function submitName() {
   }
 
   userName = nameInput; // Guarda el nombre del usuario
-  document.getElementById("nameMenu").style.display = "none"; // Oculta el menú de nombre
-  document.getElementById("menu").style.display = "block"; // Muestra el menú principal
+  fadeOut(document.getElementById("nameMenu"), () => {
+    fadeIn(document.getElementById("menu"));
+  });
   createDownloadAndResetButtons(); // Asegurarse de que los botones se añadan cuando se muestra el menú
 }
 
@@ -195,8 +196,9 @@ function openSection(section) {
   document.getElementById("resultContainer").style.display = "none"; // Ocultar contenedor de resultados al abrir una nueva sección
   if (questionsData[section]) {
     // Si la sección tiene preguntas, mostrar el menú de meses
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("monthMenu").style.display = "block"; // Mostrar el menú de meses
+    fadeOut(document.getElementById("menu"), () => {
+      fadeIn(document.getElementById("monthMenu"));
+    });
   } else {
     // Si no hay preguntas, mostrar popup de función en desarrollo
     showPopup("Opción en desarrollo");
@@ -207,16 +209,17 @@ function openSection(section) {
 function showPopup(message) {
   const popup = document.getElementById("popup");
   document.getElementById("popupMessage").innerText = message;
-  popup.style.display = "block";
+  fadeIn(popup);
 }
 
 // Función para manejar la selección de un mes
 function selectMonth(month) {
   selectedMonth = month;
-  document.getElementById("monthMenu").style.display = "none";
-  document.getElementById("questionnaire").style.display = "block";
-  document.getElementById("sectionTitle").innerText = `${currentSection} - ${month}`; // Actualizar título
-  loadQuestions(currentSection);
+  fadeOut(document.getElementById("monthMenu"), () => {
+    fadeIn(document.getElementById("questionnaire"));
+    document.getElementById("sectionTitle").innerText = `${currentSection} - ${month}`; // Actualizar título
+    loadQuestions(currentSection);
+  });
 }
 
 // Cargar preguntas y asociar eventos de cambio
@@ -266,21 +269,14 @@ function setScore(index) {
 }
 
 // Función para calcular el PRP Score y mostrarlo
-// Función para calcular el PRP Score y mostrarlo
 function calculatePRPScore() {
-  // Calculate the sum of the user's scores (actualScore)
   const actualScore = questionsData[currentSection].reduce((sum, item) => sum + item.score, 0);
-
-  // Calculate the sum of the total possible scores
-  const totalPossibleScore = questionsData[currentSection].reduce((sum, item) => sum + 10, 0); // Assuming each question has a max score of 10
-
-  // Calculate PRP Score using the new formula
+  const totalPossibleScore = questionsData[currentSection].length * 10; // Asumiendo que cada pregunta tiene un puntaje máximo de 10
   const prpScore = ((actualScore / totalPossibleScore) * 100).toFixed(2);
 
-  // Display or use the PRP Score as needed
   alert(`PRP SCORE = ${prpScore}`);
   const resultContainer = document.getElementById("resultContainer");
-  resultContainer.innerHTML += `<p>PRP Score: ${prpScore}%</p>`;
+  resultContainer.innerHTML = `<p>PRP Score: ${prpScore}%</p>`;
 }
 
 // Función para mostrar/ocultar el cuadro de texto
@@ -295,23 +291,25 @@ function toggleTextInput(index, show) {
 
 // Función para cerrar pop-up
 function closePopup() {
-  document.getElementById("popup").style.display = "none";
+  fadeOut(document.getElementById("popup"));
 }
 
 // Función para regresar al menú principal
 function returnToMainMenu() {
-  document.getElementById("monthMenu").style.display = "none";
-  document.getElementById("menu").style.display = "block";
-  document.getElementById("resultContainer").style.display = "none"; // Ocultar el contenedor de resultados al regresar al menú principal
-  createDownloadAndResetButtons(); // Asegurarse de que los botones se añadan cuando se regresa al menú principal
+  fadeOut(document.getElementById("monthMenu"), () => {
+    fadeIn(document.getElementById("menu"));
+  });
+  document.getElementById("resultContainer").style.display = "none";
+  createDownloadAndResetButtons();
 }
 
 // Función para regresar al menú desde el cuestionario
 function returnToMenu() {
-  document.getElementById("menu").style.display = "block";
-  document.getElementById("questionnaire").style.display = "none";
-  document.getElementById("resultContainer").style.display = "none"; // Ocultar el contenedor de resultados al regresar al menú
-  createDownloadAndResetButtons(); // Asegurarse de que los botones se añadan al mostrar el menú
+  fadeOut(document.getElementById("questionnaire"), () => {
+    fadeIn(document.getElementById("menu"));
+  });
+  document.getElementById("resultContainer").style.display = "none";
+  createDownloadAndResetButtons();
 }
 
 // Función para enviar respuestas, calcular puntaje y mostrar resultado
@@ -322,54 +320,27 @@ async function submitAnswers() {
   }
 
   const response = [];
-  let totalScore = 0; // Variable para calcular el puntaje total
+  let totalScore = 0;
 
-  // Procesar respuestas y calcular puntaje
   questionsData[currentSection].forEach((item, index) => {
     const answer = document.querySelector(`input[name="q${index}"]:checked`);
     let comment = "";
-    let score = 0; // Variable para almacenar el puntaje basado en la respuesta
+    let score = 0;
 
     if (answer) {
-      // Asignar puntaje basado en la respuesta seleccionada
-      if (answer.value === "OK") {
-        score = 10;
-      } else if (answer.value === "Para mejorar") {
-        score = 5;
-      } else if (answer.value === "NO OK") {
+      if (answer.value === "OK") score = 10;
+      else if (answer.value === "Para mejorar") score = 5;
+      else if (answer.value === "NO OK") {
         score = 0;
-        // Mostrar recuadro de texto si la opción es "NO OK"
-        const textInputContainer = document.getElementById(`textInputContainer${index}`);
-        if (textInputContainer) {
-          textInputContainer.style.display = 'block'; // Mostrar el recuadro de texto
-        }
-        // Capturar comentario si se selecciona "NO OK"
         const textInput = document.getElementById(`textInput${index}`);
         if (textInput && textInput.value.trim() !== "") {
           comment = textInput.value.trim();
         }
       }
-
-      // Ocultar recuadro de texto si no es "NO OK"
-      if (answer.value !== "NO OK") {
-        const textInputContainer = document.getElementById(`textInputContainer${index}`);
-        if (textInputContainer) {
-          textInputContainer.style.display = 'none'; // Ocultar el recuadro de texto
-        }
-      }
-    } else {
-      // Si no hay respuesta seleccionada, puntaje es 0 y ocultar recuadro
-      score = 0;
-      const textInputContainer = document.getElementById(`textInputContainer${index}`);
-      if (textInputContainer) {
-        textInputContainer.style.display = 'none';
-      }
     }
 
-    // Acumular el puntaje total
     totalScore += score;
 
-    // Agregar respuesta al array de respuestas
     response.push({
       question: item.question,
       answer: answer ? answer.value : "No respondida",
@@ -378,51 +349,54 @@ async function submitAnswers() {
     });
   });
 
-  // Preparar datos para enviar a la API
-  const dataToSend = {
-    userName,
-    section: currentSection,
-    month: selectedMonth,
-    response
-  };
+  const dataToSend = { userName, section: currentSection, month: selectedMonth, response };
 
   try {
     const result = await fetch('https://seguridad-alimentaria-pr-ea9c4-default-rtdb.firebaseio.com/saveResponses.json', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataToSend)
     });
 
     if (result.ok) {
       calculatePRPScore();
-      // Mostrar resultados en el contenedor específico
       const resultContainer = document.getElementById("resultContainer");
-      resultContainer.innerHTML = `
-        <h2>Puntaje PRP: ${totalScore}</h2>
-        <p>PRP Score: ${prpScore}%</p>
-        <button onclick="returnToMainMenu()">Regresar al menú principal</button>
-      `;
-      // Ocultar el cuestionario y mostrar el contenedor de resultados
+      resultContainer.innerHTML = `<h2>Puntaje PRP: ${totalScore}</h2>`;
       document.getElementById("questionnaire").style.display = "none";
       resultContainer.style.display = "block";
     } else {
-      alert("Hubo un problema al guardar las respuestas. Por favor, intenta de nuevo.");
+      const errorMessage = await result.text();
+      alert(`Hubo un problema al guardar las respuestas: ${errorMessage}`);
     }
   } catch (error) {
     console.error("Error al guardar las respuestas:", error);
     alert("Error de conexión. No se pudo guardar la información.");
   }
 
-  // Regresar al menú después del envío
   returnToMenu();
+}
+
+function fadeIn(element) {
+  element.style.opacity = 0;
+  element.style.display = 'block';
+  setTimeout(() => {
+    element.style.transition = 'opacity 0.5s ease-in-out';
+    element.style.opacity = 1;
+  }, 10);
+}
+
+function fadeOut(element, callback) {
+  element.style.transition = 'opacity 0.5s ease-in-out';
+  element.style.opacity = 0;
+  setTimeout(() => {
+    element.style.display = 'none';
+    if (callback) callback();
+  }, 500);
 }
 
 // Función para descargar respuestas acumuladas en CSV desde la API
 async function downloadAccumulatedAnswers() {
   try {
-    // Cambiar la URL para acceder directamente al nodo de respuestas guardadas
     const response = await fetch('https://seguridad-alimentaria-pr-ea9c4-default-rtdb.firebaseio.com/saveResponses.json');
     if (!response.ok) {
       throw new Error('Error al obtener las respuestas.');
@@ -468,37 +442,31 @@ async function downloadAccumulatedAnswers() {
 function createDownloadAndResetButtons() {
   const menu = document.getElementById("menu");
 
-  // Verifica si los botones ya existen y evita añadirlos de nuevo
-  if (document.getElementById("downloadButton") && document.getElementById("resetButton")) {
-    return; // Los botones ya están creados, no hacer nada
-  }
+  if (document.getElementById("downloadButton") && document.getElementById("resetButton")) return;
 
-  // Crear botón de descarga
   const downloadButton = document.createElement("button");
   downloadButton.id = "downloadButton";
   downloadButton.innerText = "⬇️ Descargar Resultados";
-  downloadButton.className = "button"; // Usar la clase existente para estilo
+  downloadButton.className = "button";
   downloadButton.onclick = downloadAccumulatedAnswers;
   menu.appendChild(downloadButton);
 
-  // Crear botón de reinicio
   const resetButton = document.createElement("button");
   resetButton.id = "resetButton";
   resetButton.innerText = "Reiniciar Nombre";
-  resetButton.className = "button"; // Usar la misma clase para mantener estilo
+  resetButton.className = "button";
   resetButton.onclick = resetUser;
-  resetButton.style.marginLeft = "10px"; // Agregar margen para separar botones
+  resetButton.style.marginLeft = "10px";
   menu.appendChild(resetButton);
 }
 
-// Función de Reinicio de usuario
 function resetUser() {
-  userName = ''; // Limpia el nombre almacenado
-  document.getElementById("menu").style.display = "none"; // Oculta el menú principal
-  document.getElementById("nameMenu").style.display = "block"; // Muestra el menú de nombre
+  userName = '';
+  fadeOut(document.getElementById("menu"), () => {
+    fadeIn(document.getElementById("nameMenu"));
+  });
 }
 
-// Llamar a la función de creación de botón al cargar la página
 window.onload = function() {
   createDownloadAndResetButtons();
 };
