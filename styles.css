@@ -9,18 +9,38 @@ body {
 
 body::before {
   content: '';
-  position: fixed; /* Cambiado a fixed para que siempre cubra toda la pantalla */
+  position: fixed; /* Ensure it covers the entire screen */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://i.postimg.cc/v8zPBY8N/Dise-o-sin-t-tulo.png'); /* Cambia esto por la URL de tu imagen proporcionada */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center top; /* Ajustado para alejar la imagen de fondo */
-  filter: brightness(0.85); /* Reducción del brillo solo para la imagen de fondo */
-  z-index: -1; /* Envía esta capa detrás del contenido principal*/
+  background-image: url('https://i.postimg.cc/v8zPBY8N/Dise-o-sin-t-tulo.png'); /* Replace with your image URL */
+  background-size: cover; /* Reverting to cover but maintaining aspect ratio */
+  background-repeat: no-repeat; /* Ensures no repeated image */
+  background-position: center; /* Centers the image */
+  filter: brightness(0.85); /* Optional: Adjust brightness */
+  z-index: -1; /* Send behind the main content */
 }
+
+
+
+/* New styles for question container */
+/* New styles for each question container */
+/* Apply styles only to individual question containers */
+/* Styles for each question container */
+/* Styles for each question container */
+.question-box {
+  background-color: #2e2e2e; /* Dark grey background */
+  padding: 15px;            /* Padding for inner content */
+  border-radius: 8px;       /* Rounded corners */
+  margin-bottom: 20px;      /* Space between questions */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Shadow effect */
+  max-width: fit-content;   /* Adjusts box width to the content size */
+  margin-left: auto;        /* Centers the box */
+  margin-right: auto;       /* Centers the box */
+  color: #ffffff;           /* Text color set to white for better contrast */
+}
+
 
 #menu {
   padding: 0; /* Reset padding to avoid extra spacing around the title */

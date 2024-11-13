@@ -68,9 +68,13 @@
     <h1 id="sectionTitle"></h1>
   </div>
   <button class="button back-button" onclick="returnToMenu()">Regresar al Menú</button>
-  <div id="questionsContainer"></div>
+  <!-- Added wrapper div for questions -->
+  <div class="question-box">
+    <div id="questionsContainer"></div>
+  </div>
   <button class="button submit-button" onclick="submitAnswers()">Enviar</button>
 </div>
+
 <!-- Contenedor para mostrar resultados -->
 <div id="resultContainer" style="display:none; position: relative;"></div>
 

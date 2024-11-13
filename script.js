@@ -225,29 +225,38 @@ function selectMonth(month) {
 // Cargar preguntas y asociar eventos de cambio
 function loadQuestions(section) {
   const container = document.getElementById("questionsContainer");
-  container.innerHTML = '';
+  container.innerHTML = ''; // Clear existing questions
 
   if (questionsData[section]) {
     questionsData[section].forEach((item, index) => {
+      // Create a wrapper div for each question
       const questionDiv = document.createElement("div");
-      questionDiv.style.marginBottom = "50px"; // Añadir margen para separación entre preguntas
+      questionDiv.className = "question-box"; // Apply styles to individual boxes
+
+      questionDiv.style.maxWidth = "fit-content"; // Ensure the box adjusts to the content width
+
       questionDiv.innerHTML = `
         <p>${item.question}</p>
-        <label><input type="radio" name="q${index}" value="OK" onchange="setScore(${index})"> OK</label>
-        <label><input type="radio" name="q${index}" value="Para mejorar" onchange="setScore(${index})"> Para mejorar</label>
-        <label><input type="radio" name="q${index}" value="NO OK" onchange="setScore(${index})"> NO OK</label>
+        <div style="margin-top: 10px;">
+          <label><input type="radio" name="q${index}" value="OK" onchange="setScore(${index})"> OK</label>
+          <label><input type="radio" name="q${index}" value="Para mejorar" onchange="setScore(${index})"> Para mejorar</label>
+          <label><input type="radio" name="q${index}" value="NO OK" onchange="setScore(${index})"> NO OK</label>
+        </div>
         <div id="textInputContainer${index}" style="display:none; margin-top: 20px;">
           <label for="textInput${index}">Agregue la Acción:</label><br>
           <textarea id="textInput${index}" name="textInput${index}" rows="3" style="width: 100%; margin-top: 10px;"></textarea>
         </div>
       `;
-      container.appendChild(questionDiv);
+      container.appendChild(questionDiv); // Append each question to the container
     });
   } else {
     console.error("Section not found in questionsData:", section);
     showPopup("Error: la sección seleccionada no contiene preguntas.");
   }
 }
+
+
+
 
 function setScore(index) {
   const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
