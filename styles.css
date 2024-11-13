@@ -18,8 +18,8 @@ body::before {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center top; /* Ajustado para alejar la imagen de fondo */
-  filter: brightness(0.6); /* Reducción del brillo solo para la imagen de fondo */
-  z-index: -1; /* Envía esta capa detrás del contenido principal */
+  filter: brightness(0.85); /* Reducción del brillo solo para la imagen de fondo */
+  z-index: -1; /* Envía esta capa detrás del contenido principal*/
 }
 
 #menu {
@@ -35,7 +35,7 @@ body::before {
   padding: 20px;
   width: 100%;
   text-align: center;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .title .overlay {
@@ -124,6 +124,7 @@ body::before {
 #questionnaire, #popup {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: white; /* Cambiado a texto blanco */
+  text-shadow: 2px 2px 2px black; /* Contorno agregado a las letras blancas */
 }
 
 #questionsContainer p {
@@ -132,6 +133,7 @@ body::before {
   font-size: 16px;
   line-height: 1.5;
   color: white; /* Cambiado a texto blanco */
+  text-shadow: 2px 2px 2px black; /* Contorno agregado a las letras blancas */
 }
 
 #menuHeader {
@@ -157,4 +159,3 @@ body::before {
   font-size: 16px;
   z-index: 1000; /* Ensures it is on top of other elements */
 }
-
