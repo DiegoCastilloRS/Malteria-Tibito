@@ -277,16 +277,36 @@ function setScore(index) {
   }
 }
 
-// Función para calcular el PRP Score y mostrarlo
+// Función modificada para calcular el PRP Score
 function calculatePRPScore() {
-  const actualScore = questionsData[currentSection].reduce((sum, item) => sum + item.score, 0);
-  const totalPossibleScore = questionsData[currentSection].length * 10; // Asumiendo que cada pregunta tiene un puntaje máximo de 10
-  const prpScore = ((actualScore / totalPossibleScore) * 100).toFixed(2);
+  if (!questionsData[currentSection]) {
+    console.error('Error: Sección no encontrada en questionsData.');
+    return;
+  }
 
-  alert(`PRP SCORE = ${prpScore}`);
+  // Calcular la sumatoria de los puntajes obtenidos
+  const actualScoreSum = questionsData[currentSection].reduce((sum, item) => {
+    return sum + (item.score || 0);
+  }, 0);
+
+  // Calcular el puntaje máximo posible basado en la cantidad total de preguntas
+  const totalQuestions = questionsData[currentSection].length;
+  const maxScorePerQuestion = 10; // Supongamos que cada pregunta tiene un puntaje máximo de 10
+  const maxPossibleScore = totalQuestions * maxScorePerQuestion;
+
+  // Calcular el PRP Score usando la fórmula proporcionada
+  const prpScore = ((actualScoreSum / maxPossibleScore) * 100).toFixed(2);
+
+  // Mostrar el resultado con el PRP Score, actualScore y maxPossibleScore
+  alert(`PRP SCORE = ${prpScore}%`);
   const resultContainer = document.getElementById("resultContainer");
-  resultContainer.innerHTML = `<p>PRP Score: ${prpScore}%</p>`;
+  resultContainer.innerHTML = `
+    <p>PRP Score: ${prpScore}%</p>
+    <p>Puntaje Actual (Acumulado): ${actualScoreSum}</p>
+    <p>Puntaje Máximo Posible: ${maxPossibleScore}</p>
+  `;
 }
+
 
 // Función para mostrar/ocultar el cuadro de texto
 function toggleTextInput(index, show) {
@@ -346,8 +366,13 @@ async function submitAnswers() {
           comment = textInput.value.trim();
         }
       }
+    } else {
+      // Si no hay respuesta, asignamos un score de 0
+      score = 0;
     }
 
+    // Asegurar que el puntaje se guarde en el objeto questionsData
+    questionsData[currentSection][index].score = score;
     totalScore += score;
 
     response.push({
@@ -358,8 +383,9 @@ async function submitAnswers() {
     });
   });
 
+  // Guardar y calcular el PRP Score después de actualizar todos los puntajes
   const dataToSend = { userName, section: currentSection, month: selectedMonth, response };
-
+  
   try {
     const result = await fetch('https://seguridad-alimentaria-pr-ea9c4-default-rtdb.firebaseio.com/saveResponses.json', {
       method: 'POST',
@@ -368,7 +394,7 @@ async function submitAnswers() {
     });
 
     if (result.ok) {
-      calculatePRPScore();
+      calculatePRPScore(); // Llamar a la función después de asignar todos los puntajes
       const resultContainer = document.getElementById("resultContainer");
       resultContainer.innerHTML = `<h2>Puntaje PRP: ${totalScore}</h2>`;
       document.getElementById("questionnaire").style.display = "none";
@@ -384,6 +410,7 @@ async function submitAnswers() {
 
   returnToMenu();
 }
+
 
 function fadeIn(element) {
   element.style.opacity = 0;
@@ -426,7 +453,7 @@ async function downloadAccumulatedAnswers() {
           const escapedQuestion = question.replace(/"/g, '""');
           const escapedAnswer = answer.replace(/"/g, '""');
           const escapedComment = comment.replace(/"/g, '""');
-          csvContent += `"${userName}","${section}","${month}","${escapedQuestion}","${escapedAnswer}",${score || ''},"${escapedComment}"\n`;
+          csvContent += `"${userName}","${section}","${month}","${escapedQuestion}","${escapedAnswer}",${score !== undefined ? score : 0},"${escapedComment}"\n`;
         });
       }
     });
