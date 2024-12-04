@@ -174,8 +174,10 @@ const questionsData = {
 let currentSection = '';
 let selectedMonth = ''; // Variable para almacenar el mes seleccionado
 let userName = ''; // Variable para almacenar el nombre del usuario
+let currentSubArea = ''; // Variable para almacenar la subárea seleccionada
 
-// Función del nombre
+
+// Función para Enviar el Nombre del Usuario
 function submitName() {
   const nameInput = document.getElementById("userNameInput").value.trim();
   if (nameInput === "") {
@@ -183,27 +185,43 @@ function submitName() {
     return;
   }
 
-  userName = nameInput; // Guarda el nombre del usuario
+  const existingUserKey = `userName_${nameInput}`;
+  if (localStorage.getItem(existingUserKey)) {
+    // Si el nombre existe, cargar las respuestas del usuario
+    userName = nameInput;
+    alert(`Bienvenido de nuevo, ${userName}. Se cargarán tus respuestas guardadas.`);
+  } else {
+    // Si el nombre no existe, crear una nueva entrada
+    userName = nameInput;
+    localStorage.setItem(existingUserKey, nameInput);
+    alert(`Hola ${userName}, se ha creado un nuevo registro para ti.`);
+  }
+
+  // Cambiar al menú principal con transiciones
   fadeOut(document.getElementById("nameMenu"), () => {
     fadeIn(document.getElementById("menu"));
   });
-  createDownloadAndResetButtons(); // Asegurarse de que los botones se añadan cuando se muestra el menú
+  // createDownloadAndResetButtons(); // Ya existen en HTML
 }
 
 // Función para abrir sección y manejar si tiene cuestionario o mostrar popup
 function openSection(section) {
   currentSection = section;
-  document.getElementById("resultContainer").style.display = "none"; // Ocultar contenedor de resultados al abrir una nueva sección
-  if (questionsData[section]) {
-    // Si la sección tiene preguntas, mostrar el menú de meses
-    fadeOut(document.getElementById("menu"), () => {
-      fadeIn(document.getElementById("monthMenu"));
-    });
+  document.getElementById("resultContainer").style.display = "none";
+
+  if (section === "Area de Malteo") {
+      fadeOut(document.getElementById("menu"), () => {
+          fadeIn(document.getElementById("maltingAreaMenu"));
+      });
+  } else if (questionsData[section]) {
+      fadeOut(document.getElementById("menu"), () => {
+          fadeIn(document.getElementById("monthMenu"));
+      });
   } else {
-    // Si no hay preguntas, mostrar popup de función en desarrollo
-    showPopup("Opción en desarrollo");
+      showPopup("Opción en desarrollo");
   }
 }
+
 
 // Función para mostrar popup
 function showPopup(message) {
@@ -212,28 +230,131 @@ function showPopup(message) {
   fadeIn(popup);
 }
 
-// Función para manejar la selección de un mes
-function selectMonth(month) {
-  selectedMonth = month;
-  fadeOut(document.getElementById("monthMenu"), () => {
-    fadeIn(document.getElementById("questionnaire"));
-    document.getElementById("sectionTitle").innerText = `${currentSection} - ${month}`; // Actualizar título
-    loadQuestions(currentSection);
+
+
+////////////////////////////
+// Función para crear el menú intermedio entre área de malteo y selección de mes
+function createMaltingAreaMenu() {
+  const menuContainer = document.getElementById("menu");
+  if (document.getElementById("maltingAreaMenu")) return; // Evitar duplicados
+
+  // Crear el menú de áreas de malteo
+  const maltingAreaMenu = document.createElement("div");
+  maltingAreaMenu.id = "maltingAreaMenu";
+  maltingAreaMenu.className = "menu"; // Mantén el estilo consistente con el resto de la app
+
+  const options = ["Cebadas y Maltas", "Remojo", "Germinación", "Tostación"];
+
+  options.forEach(option => {
+    const button = document.createElement("button");
+    button.className = "button";
+    button.innerText = option;
+    button.onclick = () => selectMaltingArea(option);
+    maltingAreaMenu.appendChild(button);
+  });
+
+  menuContainer.appendChild(maltingAreaMenu);
+}
+
+// Función para manejar la selección de un área de malteo
+function selectMaltingArea(area) {
+  currentSection = area; // Asigna directamente el área seleccionada
+  fadeOut(document.getElementById("maltingAreaMenu"), () => {
+      fadeIn(document.getElementById("monthMenu")); // Mostrar menú de meses
   });
 }
 
+
+// Función para seleccionar un mes
+function selectMonth(month) {
+  console.log(`Seleccionar mes: ${month}`);
+  selectedMonth = month;
+
+  fadeOut(document.getElementById("monthMenu"), () => {
+    fadeIn(document.getElementById("questionnaire"));
+    // Actualiza el título del cuestionario
+    const sectionTitleElement = document.getElementById("sectionTitle");
+    if (sectionTitleElement) {
+      if (currentSubArea) {
+        sectionTitleElement.innerText = `${currentSection} - ${currentSubArea} - ${month}`;
+      } else {
+        sectionTitleElement.innerText = `${currentSection} - ${month}`;
+      }
+    } else {
+      console.error("Elemento con ID 'sectionTitle' no encontrado.");
+    }
+    loadQuestions(currentSection); // Cargar preguntas para la sección actual
+    loadAnswersWithExpiration(); // Rellenar respuestas previas (si existen)
+  });
+}
+
+
+
+// Función para mostrar el menú de selección de mes
+function showMonthSelection() {
+  const monthMenu = document.getElementById("monthMenu");
+  if (monthMenu) {
+    fadeIn(monthMenu);
+  }
+}
+
+// Función para cargar el menú de selección de mes
+function createMonthMenu() {
+  const menuContainer = document.getElementById("menu");
+
+  if (document.getElementById("monthMenu")) return; // Evitar duplicados
+
+  const monthMenu = document.createElement("div");
+  monthMenu.id = "monthMenu";
+  monthMenu.className = "menu";
+
+  const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  
+  months.forEach(month => {
+    const button = document.createElement("button");
+    button.className = "button";
+    button.innerText = month;
+    button.onclick = () => selectMonth(month);
+    monthMenu.appendChild(button);
+  });
+
+  menuContainer.appendChild(monthMenu);
+}
+
+// Llamar la función para crear los menús cuando se cargue la página
+window.onload = function() {
+  createMaltingAreaMenu(); // Crear menú de áreas de malteo
+  createMonthMenu();       // Crear menú de meses
+  createDownloadAndResetButtons(); // Crear botones adicionales
+};
+
+
+function selectMalteoOption(option) {
+  currentSubArea = option; // Almacena la subárea seleccionada
+  currentSection = "Area de Malteo"; // Mantiene la sección principal
+  fadeOut(document.getElementById("maltingAreaMenu"), () => {
+    fadeIn(document.getElementById("monthMenu"));
+  });
+}
+
+
+
+
+
+///////////////////////////////
+
 // Cargar preguntas y asociar eventos de cambio
 function loadQuestions(section) {
+  const baseSection = section.startsWith('Area de Malteo') ? 'Area de Malteo' : section;
   const container = document.getElementById("questionsContainer");
-  container.innerHTML = ''; // Clear existing questions
+  container.innerHTML = ''; // Limpiar preguntas existentes
 
-  if (questionsData[section]) {
-    questionsData[section].forEach((item, index) => {
-      // Create a wrapper div for each question
+  if (questionsData[baseSection]) {
+    questionsData[baseSection].forEach((item, index) => {
+      // Crear contenedor para cada pregunta
       const questionDiv = document.createElement("div");
-      questionDiv.className = "question-box"; // Apply styles to individual boxes
-
-      questionDiv.style.maxWidth = "fit-content"; // Ensure the box adjusts to the content width
+      questionDiv.className = "question-box"; // Aplicar estilo individual
+      questionDiv.style.maxWidth = "fit-content"; // Ajustar al contenido
 
       questionDiv.innerHTML = `
         <p>${item.question}</p>
@@ -247,14 +368,14 @@ function loadQuestions(section) {
           <textarea id="textInput${index}" name="textInput${index}" rows="3" style="width: 100%; margin-top: 10px;"></textarea>
         </div>
       `;
-      container.appendChild(questionDiv); // Append each question to the container
+      container.appendChild(questionDiv); // Añadir cada pregunta al contenedor
     });
+    loadAnswersWithExpiration(); // Verificar respuestas guardadas y expiración
   } else {
-    console.error("Section not found in questionsData:", section);
+    console.error("Sección no encontrada en questionsData:", baseSection);
     showPopup("Error: la sección seleccionada no contiene preguntas.");
   }
 }
-
 
 
 
@@ -274,6 +395,7 @@ function setScore(index) {
     } else {
       toggleTextInput(index, false); // Ocultar cuadro de texto
     }
+    saveAnswersWithExpiration(); // Guardar con tiempo de expiración
   }
 }
 
@@ -326,11 +448,13 @@ function closePopup() {
 // Función para regresar al menú principal
 function returnToMainMenu() {
   fadeOut(document.getElementById("monthMenu"), () => {
-    fadeIn(document.getElementById("menu"));
+      fadeIn(document.getElementById("menu"));
   });
   document.getElementById("resultContainer").style.display = "none";
-  createDownloadAndResetButtons();
 }
+
+
+
 
 // Función para regresar al menú desde el cuestionario
 function returnToMenu() {
@@ -338,7 +462,6 @@ function returnToMenu() {
     fadeIn(document.getElementById("menu"));
   });
   document.getElementById("resultContainer").style.display = "none";
-  createDownloadAndResetButtons();
 }
 
 // Función para enviar respuestas, calcular puntaje y mostrar resultado
@@ -383,8 +506,10 @@ async function submitAnswers() {
     });
   });
 
-  // Guardar y calcular el PRP Score después de actualizar todos los puntajes
-  const dataToSend = { userName, section: currentSection, month: selectedMonth, response };
+  // Incluir la subárea en el campo 'section'
+  const sectionWithSubArea = currentSubArea ? `${currentSection} - ${currentSubArea}` : currentSection;
+
+  const dataToSend = { userName, section: sectionWithSubArea, month: selectedMonth, response };
   
   try {
     const result = await fetch('https://seguridad-alimentaria-pr-ea9c4-default-rtdb.firebaseio.com/saveResponses.json', {
@@ -473,6 +598,107 @@ async function downloadAccumulatedAnswers() {
     alert("Hubo un problema al descargar las respuestas. Inténtalo de nuevo.");
   }
 }
+
+// Función para Guardar Respuestas con Tiempo de Expiración
+function saveAnswersWithExpiration() {
+  if (!userName) {
+    alert("Por favor ingresa tu nombre antes de continuar.");
+    return;
+  }
+
+  const expirationTime = new Date().getTime() + 30 * 60 * 1000; // 30 minutos desde ahora
+  const data = {
+    userName,
+    section: currentSection,
+    subArea: currentSubArea,
+    month: selectedMonth,
+    expiration: expirationTime,
+    responses: questionsData[currentSection].map((item, index) => {
+      const answer = document.querySelector(`input[name="q${index}"]:checked`);
+      const comment = document.getElementById(`textInput${index}`)?.value || "";
+      return {
+        question: item.question,
+        answer: answer ? answer.value : "",
+        score: item.score || 0,
+        comment: comment
+      };
+    }),
+  };
+
+  const storageKey = currentSubArea ? `quiz_${userName}_${currentSection}_${currentSubArea}_${selectedMonth}` : `quiz_${userName}_${currentSection}_${selectedMonth}`;
+  localStorage.setItem(storageKey, JSON.stringify(data));
+  sessionStorage.setItem(storageKey, JSON.stringify(data)); // Sincronizar con sessionStorage
+}
+
+
+// Función para Cargar Respuestas desde el Almacenamiento Local
+function loadAnswersWithExpiration() {
+  if (!userName) {
+    alert("Por favor ingresa tu nombre antes de continuar.");
+    return;
+  }
+
+  const storageKey = currentSubArea ? `quiz_${userName}_${currentSection}_${currentSubArea}_${selectedMonth}` : `quiz_${userName}_${currentSection}_${selectedMonth}`;
+  const savedData = localStorage.getItem(storageKey);
+  if (savedData) {
+    const data = JSON.parse(savedData);
+    const currentTime = new Date().getTime();
+    if (currentTime > data.expiration) {
+      // Si ha expirado, eliminar las respuestas
+      localStorage.removeItem(storageKey);
+      sessionStorage.removeItem(storageKey);
+      alert("La sesión ha expirado. Por favor, completa el cuestionario nuevamente.");
+      return;
+    }
+
+    // Rellenar las respuestas guardadas
+    data.responses.forEach((response, index) => {
+      if (response.answer) {
+        const radio = document.querySelector(`input[name="q${index}"][value="${response.answer}"]`);
+        if (radio) radio.checked = true;
+
+        questionsData[currentSection][index].score = response.score || 0;
+      }
+      if (response.comment) {
+        const textInput = document.getElementById(`textInput${index}`);
+        if (textInput) {
+          textInput.value = response.comment;
+          toggleTextInput(index, true);
+        }
+      }
+    });
+  }
+}
+
+
+// Función para Establecer el Puntaje según la Respuesta
+function setScore(index) {
+  const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+  console.log(`Configurar puntaje para pregunta ${index}: ${selectedOption.value}`);
+  if (selectedOption) {
+    const scoreMap = {
+      "OK": 10,
+      "Para mejorar": 5,
+      "NO OK": 0
+    };
+    questionsData[currentSection][index].score = scoreMap[selectedOption.value] || 0;
+
+    if (selectedOption.value === "NO OK") {
+      toggleTextInput(index, true); // Mostrar cuadro de texto
+    } else {
+      toggleTextInput(index, false); // Ocultar cuadro de texto
+    }
+
+    saveAnswersWithExpiration(); // Guardar con tiempo de expiración
+  }
+}
+
+
+// Función para limpiar respuestas del almacenamiento local al enviar
+function clearAnswersFromLocalStorage() {
+  localStorage.removeItem(`quiz_${userName}_${currentSection}_${selectedMonth}`);
+}
+
 
 // Crear botones de descarga y reinicio en el menú
 function createDownloadAndResetButtons() {
