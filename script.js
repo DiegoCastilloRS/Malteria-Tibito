@@ -519,11 +519,14 @@ async function submitAnswers() {
     });
 
     if (result.ok) {
-      calculatePRPScore(); // Llamar a la función después de asignar todos los puntajes
+      calculatePRPScore();
+      // Muestra resultado antes de regresar al menú
       const resultContainer = document.getElementById("resultContainer");
       resultContainer.innerHTML = `<h2>Puntaje PRP: ${totalScore}</h2>`;
-      document.getElementById("questionnaire").style.display = "none";
       resultContainer.style.display = "block";
+      
+      // Ahora sí, regresar al menú después de un tiempo o tras un botón "Volver"
+      // returnToMenu();
     } else {
       const errorMessage = await result.text();
       alert(`Hubo un problema al guardar las respuestas: ${errorMessage}`);
@@ -671,29 +674,6 @@ function loadAnswersWithExpiration() {
 }
 
 
-// Función para Establecer el Puntaje según la Respuesta
-function setScore(index) {
-  const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
-  console.log(`Configurar puntaje para pregunta ${index}: ${selectedOption.value}`);
-  if (selectedOption) {
-    const scoreMap = {
-      "OK": 10,
-      "Para mejorar": 5,
-      "NO OK": 0
-    };
-    questionsData[currentSection][index].score = scoreMap[selectedOption.value] || 0;
-
-    if (selectedOption.value === "NO OK") {
-      toggleTextInput(index, true); // Mostrar cuadro de texto
-    } else {
-      toggleTextInput(index, false); // Ocultar cuadro de texto
-    }
-
-    saveAnswersWithExpiration(); // Guardar con tiempo de expiración
-  }
-}
-
-
 // Función para limpiar respuestas del almacenamiento local al enviar
 function clearAnswersFromLocalStorage() {
   localStorage.removeItem(`quiz_${userName}_${currentSection}_${selectedMonth}`);
@@ -728,7 +708,3 @@ function resetUser() {
     fadeIn(document.getElementById("nameMenu"));
   });
 }
-
-window.onload = function() {
-  createDownloadAndResetButtons();
-};
